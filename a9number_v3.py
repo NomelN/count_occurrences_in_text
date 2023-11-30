@@ -1,5 +1,5 @@
 import cProfile
-
+#import string
 
 """In order to run the tests simply run
 
@@ -8,41 +8,49 @@ python -m pytest a9number_v3.py
 In order to see the profiling, you need to add the option -s
 """
 
+
 def count_occurrences_in_text(word, text):
     """
     Return the number of occurrences of the passed word (case insensitive) in text
     """
 
-    # TODO: your code goes here, but it's OK to add new functions or import modules if needed
-    
-    word_count = 0  # Initialize a counter for the occurrences of the word
-    len_word = len(word)  # Length of the word
-    len_text = len(text)  # Length of the text
-    i = 0  # Initialize an index to traverse the text
+    # Initialize variables
+    i = 0
+    j = 0
+    word_count = 0
+    len_word = len(word)
+    len_text = len(text)
+    upper_word = word.upper()
+    lower_word = word.lower()
+    separators = " ,.!?()«»:\"\n\u201c\u201d"
 
-    # Remove text markdown (non-alphabetic characters) from the start of the text
-    while (i < len_text and text[i].isalpha() == False) and (text[i] == text[len_text - 1]):
+    # Remove text markdown characters from the start and end of the text
+    while (text[i] == "'" or text[i] == '_') and text[i] == text[len_text - 1 - i]:
         i += 1
-        len_text -= 1
+
+    # Count matching word in text separated by separators
     start = i
-
-    # Count matching word in text separated by non-alphabetic or "'" characters
-    while i < len_text:
-        j = 0  # Initialize an index to traverse the word
-        if i == start or (text[i - 1].isalpha() == False and text[i - 1] != "'"):
-            # Check if the current character is the start or is separated by non-alphabetic or "'" character
-            while (j < len_word and i < len_text) and (word[j].lower() == text[i].lower()):
-                # Check if characters in the word match characters in the text (case-insensitive)
-                i += 1
-                j += 1
-            if j == len_word and (i == len_text or (text[i].isalpha() == False and text[i] != "'")):
-                # If the entire word is matched and the next character is non-alphabetic or "'", increment the counter
+    while len_text - start > i:
+        if j == len_word:
+            # Check if the current character is a separator
+            if text[i] in separators:
                 word_count += 1
-        if j == 0:
-            i += 1  # Move to the next character if no match is found in the current iteration
+            j = 0
 
-    # This does pass the unittests:
+        # Check if there is a match with the word
+        if (upper_word[j] == text[i] or lower_word[j] == text[i]) and (j > 0 or i == start or text[i - 1] in separators):
+            j += 1
+        else:
+            j = 0
+
+        i += 1
+
+    # Check if the last word in the text matches
+    if j == len_word:
+        word_count += 1
+
     return word_count
+
 
 
 def test_count_occurrences_in_text():
