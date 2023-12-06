@@ -16,21 +16,25 @@ def count_occurrences_in_text(word, text):
     """
     Return the number of occurrences of the passed word (case insensitive) in text
     """
-    i = 0
-    word_count = 0
-    previous_separator = False
+    i = 0  # indice de parcours du texte
+    word_count = 0  # compteur d'occurrences du mot
+    previous_separator = False  # Indicateur logique pour suivre si le mot précédent est entre des séparateurs
 
-    # text markdown 
+    # Suppression du texte de formatage (text markdown)
     while (text[i] == "'" or text[i] == '_') and text[i] == text[-1 - i]:
         i += 1
-    # inc  word_count if word is in between separators
+
+    # Incrémenter word_count si le mot est entre des séparateurs
     for t in re.split(word.lower(), text[i:-i].lower() if i > 0 else text.lower()):
+        # Vérifier si le mot précédent était entre des séparateurs et si le mot actuel commence par un séparateur
         if previous_separator == True and (not t or t[0] in " ,.!?()«»:\"\n\u201c\u201d"):
              word_count += 1
+        # Mettre à jour l'indicateur logique si le mot actuel se termine par un séparateur
         if not t or t[-1] in " ,.!?()«»:\"\n\u201c\u201d":
             previous_separator = True
         else:
             previous_separator = False
+
     return  word_count
 
 
