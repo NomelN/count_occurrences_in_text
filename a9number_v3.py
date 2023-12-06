@@ -1,5 +1,8 @@
 import cProfile
+import re
+#import numpy as np
 #import string
+
 
 """In order to run the tests simply run
 
@@ -13,43 +16,22 @@ def count_occurrences_in_text(word, text):
     """
     Return the number of occurrences of the passed word (case insensitive) in text
     """
-
-    # Initialize variables
     i = 0
-    j = 0
     word_count = 0
-    len_word = len(word)
-    len_text = len(text)
-    upper_word = word.upper()
-    lower_word = word.lower()
-    separators = " ,.!?()«»:\"\n\u201c\u201d"
+    previous_separator = False
 
-    # Remove text markdown characters from the start and end of the text
-    while (text[i] == "'" or text[i] == '_') and text[i] == text[len_text - 1 - i]:
+    # text markdown 
+    while (text[i] == "'" or text[i] == '_') and text[i] == text[-1 - i]:
         i += 1
-
-    # Count matching word in text separated by separators
-    start = i
-    while len_text - start > i:
-        if j == len_word:
-            # Check if the current character is a separator
-            if text[i] in separators:
-                word_count += 1
-            j = 0
-
-        # Check if there is a match with the word
-        if (upper_word[j] == text[i] or lower_word[j] == text[i]) and (j > 0 or i == start or text[i - 1] in separators):
-            j += 1
+    # inc  word_count if word is in between separators
+    for t in re.split(word.lower(), text[i:-i].lower() if i > 0 else text.lower()):
+        if previous_separator == True and (not t or t[0] in " ,.!?()«»:\"\n\u201c\u201d"):
+             word_count += 1
+        if not t or t[-1] in " ,.!?()«»:\"\n\u201c\u201d":
+            previous_separator = True
         else:
-            j = 0
-
-        i += 1
-
-    # Check if the last word in the text matches
-    if j == len_word:
-        word_count += 1
-
-    return word_count
+            previous_separator = False
+    return  word_count
 
 
 
